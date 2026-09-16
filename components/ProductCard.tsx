@@ -1,23 +1,23 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import Img from "@/components/Img";
 import { brandOf, won, type Product } from "@/lib/data";
 
 // 이미지가 아직 없으면(Higgsfield 미생성) 타이포 타일로 폴백
 export function ProductImage({ p, className = "" }: { p: Product; className?: string }) {
-  const [broken, setBroken] = useState(false);
   return (
-    <div className={`ph relative overflow-hidden ${className}`}>
-      {!broken && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={p.thumbnail} alt={p.title} onError={() => setBroken(true)} className="size-full object-cover" loading="lazy" />
-      )}
-      {broken && (
-        <div className="absolute inset-0 flex flex-col justify-end p-4">
-          <span className="text-[11px] font-semibold text-navy/60">{brandOf(p).name}</span>
-          <span className="line-clamp-2 text-lg font-bold leading-tight text-navy">{p.title}</span>
-        </div>
-      )}
+    <div className={`ph @container relative overflow-hidden ${className}`}>
+      <Img
+        src={p.thumbnail}
+        alt={p.title}
+        className="size-full object-cover"
+        fallback={
+          <div className="absolute inset-0 flex flex-col justify-end p-2 @[120px]:p-4">
+            <span className="hidden text-[11px] font-semibold text-navy/60 @[120px]:block">{brandOf(p).name}</span>
+            <span className="line-clamp-2 text-[11px] font-bold leading-tight text-navy @[120px]:text-lg">{p.title}</span>
+          </div>
+        }
+      />
     </div>
   );
 }
