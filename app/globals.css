@@ -1,0 +1,57 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+@import "tailwindcss";
+
+:root {
+  --bg: #f6f6f3;
+  --surface: #ffffff;
+  --ink: #14161a;
+  --muted: #6b7280;
+  --line: #e6e6e1;
+  --navy: #12305b;
+  --navy-deep: #0b1f3d;
+  --accent: #ff7a1a;
+  --accent-soft: #fff1e6;
+  --sky: #e8f0fb;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-sky: var(--sky);
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, system-ui, "Apple SD Gothic Neo", sans-serif;
+  --radius-xl2: 1.25rem;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+  word-break: keep-all;
+}
+
+.container-x { @apply mx-auto w-full max-w-[1200px] px-4 md:px-6; }
+
+.btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition active:scale-[0.98]; }
+.btn-primary { @apply btn bg-navy text-white hover:bg-navy-deep; }
+.btn-accent { @apply btn bg-accent text-white hover:brightness-95; }
+.btn-ghost { @apply btn border border-line bg-surface text-ink hover:bg-bg; }
+
+.card { @apply rounded-xl2 border border-line bg-surface; }
+.chip { @apply inline-flex items-center rounded-full bg-sky px-2.5 py-1 text-[11px] font-semibold text-navy; }
+
+/* 이미지 미생성 시 플레이스홀더 타일 */
+.ph {
+  background:
+    radial-gradient(120% 80% at 20% 0%, #ffffff 0%, transparent 60%),
+    linear-gradient(135deg, #e9eef6 0%, #d9e2f0 100%);
+}
