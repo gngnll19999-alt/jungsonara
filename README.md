@@ -1,6 +1,19 @@
 # 중소나라 — 중소기업 가전 B2B 납품몰
 
+> 대기업 말고, 우리 중소기업 가전. 사업자 전용 대량구매 · 견적 · 세금계산서.
+
+![메인](docs/img/home-fold.png)
+
 로컬 디자인/웹뷰 단계. 데이터는 `lib/data.ts` 목업, 장바구니/견적은 localStorage.
+
+## 문서
+| 문서 | 설명 |
+|---|---|
+| [docs/설명서.md](docs/설명서.md) | 구매자 사용법 + 운영/개발 설명서 |
+| [docs/포트폴리오.md](docs/포트폴리오.md) | 프로젝트 후기 · 기술 선택 이유 · 트러블슈팅 |
+| [docs/slides/index.html](docs/slides/index.html) | 프로젝트 보고서 슬라이드 12장 (브라우저에서 열기, ←→ 이동, E 편집) · [PDF](docs/slides/중소나라_프로젝트보고서.pdf) |
+
+슬라이드는 GitHub 29.5k★ [frontend-slides](https://github.com/zarazhangrui/frontend-slides) 스킬 + Neo-Grid Bold 템플릿(`design.md`)으로 제작.
 
 ## 실행
 ```bash

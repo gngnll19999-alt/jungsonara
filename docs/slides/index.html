@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>중소나라 프로젝트 보고서</title>
+<!-- Fonts: Space Grotesk(라틴/숫자) + Noto Sans KR 900(한글 디스플레이) + JetBrains Mono(라벨) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   THEME — Neo-Grid Bold (bold-template-pack) 한글판
+   색 3개(paper/ink/lemon) + 12×8 그리드. 여기만 바꾸면 전체가 바뀜
+   =========================================== */
+:root {
+  --paper: #F5F4EF;
+  --bg: #ECECE8;
+  --ink: #0A0A0A;
+  --lemon: #E6FF3D;
+  --muted: #8A8A85;
+  --stage-bg: #1A1A1A;
+  --slide-bg: var(--bg);
+
+  --font-display: "Space Grotesk", "Noto Sans KR", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Space Grotesk", "Noto Sans KR", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "Noto Sans KR", ui-monospace, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration: 0.6s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES (viewport-base.css 전문)
+   =========================================== */
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--stage-bg, #000); }
+.deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg, #000); }
+.deck-stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 0 0; background: var(--slide-bg, #fff); }
+.slide { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; display: block; visibility: hidden; opacity: 0; pointer-events: none; background: var(--slide-bg, #fff); }
+.slide.active, .slide.visible { visibility: visible; opacity: 1; pointer-events: auto; z-index: 1; }
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+.deck-controls { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 1000; }
+@media print {
+  html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+  .deck-viewport { position: static; overflow: visible; background: #fff; }
+  .deck-stage { position: static; width: auto; height: auto; transform: none !important; background: none; }
+  .slide { position: relative; display: block !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; width: 1920px; height: 1080px; break-after: page; page-break-after: always; }
+  .slide:last-child { break-after: auto; page-break-after: auto; }
+  .deck-controls { display: none !important; }
+  /* PDF: 애니메이션 최종 상태로 고정 */
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .edit-hotzone, .edit-toggle { display: none !important; }
+  @page { size: 1920px 1080px; margin: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+}
+
+/* ===========================================
+   TYPOGRAPHY — 디스플레이는 900(한글)/700(라틴) 대문자, 본문 400, 라벨 모노 대문자
+   =========================================== */
+body { font-family: var(--font-body); color: var(--ink); }
+.display, .title, .subtitle, .card-h, .card-h3, .stat, .num {
+  font-family: var(--font-display); font-weight: 900; text-transform: uppercase; line-height: 1.02;
+}
+.display { font-size: 124px; letter-spacing: -0.02em; line-height: 0.98; }
+.title { font-size: 76px; letter-spacing: -0.015em; }
+.subtitle { font-size: 48px; letter-spacing: -0.01em; }
+.card-h { font-size: 40px; letter-spacing: -0.01em; line-height: 1.08; }
+.card-h3 { font-size: 28px; letter-spacing: -0.005em; line-height: 1.15; }
+.stat { font-size: 156px; letter-spacing: -0.03em; line-height: 0.9; }
+.stat-lg { font-size: 240px; letter-spacing: -0.03em; line-height: 0.85; }
+.stat-sm { font-size: 96px; letter-spacing: -0.03em; line-height: 0.9; }
+.num { font-size: 320px; letter-spacing: -0.05em; line-height: 0.85; }
+.body { font-size: 27px; font-weight: 400; line-height: 1.5; }
+.body-sm { font-size: 22px; font-weight: 400; line-height: 1.55; }
+.label { font-family: var(--font-mono); font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; }
+.label-sm { font-family: var(--font-mono); font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; }
+.label-xs { font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; }
+.dim { opacity: 0.72; }
+mark { background: var(--lemon); color: var(--ink); padding: 0 8px; }
+em { font-style: normal; color: var(--lemon); }
+.ink mark { color: var(--ink); }
+
+/* ===========================================
+   FRAME — 12열 × 8행, inset 40px, gap 12px. 모든 슬라이드의 유일한 레이아웃 언어
+   =========================================== */
+.frame { position: absolute; inset: 40px; display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(8, 1fr); gap: 12px; }
+.card { background: var(--paper); position: relative; overflow: hidden; padding: 28px 32px; display: flex; flex-direction: column; }
+.card.ink { background: var(--ink); color: var(--paper); }
+.card.lemon { background: var(--lemon); color: var(--ink); }
+.card.photo { background: #111; padding: 0; }
+.card.photo img { width: 100%; height: 100%; object-fit: cover; object-position: left top; display: block; max-height: none; }
+.card.photo .tag { position: absolute; left: 16px; top: 16px; background: var(--ink); color: var(--paper); padding: 8px 12px; }
+.card .kicker { margin-bottom: 14px; }
+.card .push { margin-top: auto; }
+.pad-sm { padding: 24px 28px; }
+.pad-lg { padding: 36px 32px; }
+.pad-xl { padding: 40px 44px; }
+
+/* 페이지 번호·코너마크·블록스탬프 — 그리드 밖 절대배치 허용된 3가지 */
+.pagenum { position: absolute; left: 0; bottom: 0; background: var(--paper); color: var(--ink); padding: 14px 22px; font-family: var(--font-mono); font-size: 24px; letter-spacing: 0.04em; z-index: 2; }
+.pagenum.invert { background: var(--ink); color: var(--paper); }
+.pagenum.lemon { background: var(--lemon); color: var(--ink); }
+.corner { position: absolute; top: 22px; right: 22px; width: 36px; height: 36px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.corner i, .block i { display: block; background: currentColor; }
+.corner i:nth-child(4) { background: transparent; }
+.block { width: 56px; height: 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.block.lg { width: 96px; height: 96px; gap: 6px; }
+.block i:nth-child(2), .block i:nth-child(3) { background: transparent; }
+.qr { width: 90px; height: 90px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+.qr i { background: var(--ink); }
+.qr i.y { background: var(--lemon); }
+.qr i.o { background: transparent; }
+
+/* 표 · 필 · 화살표 · 바 */
+table { border-collapse: collapse; width: 100%; height: 100%; }
+th { background: var(--ink); color: var(--paper); font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 400; padding: 14px 20px; text-align: left; }
+td { padding: 16px 20px; border-bottom: 1.5px solid var(--ink); border-right: 1.5px solid var(--ink); font-size: 22px; line-height: 1.35; vertical-align: middle; }
+td:last-child { border-right: 0; }
+tr:last-child td { border-bottom: 0; }
+.pill { display: inline-block; font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; }
+.pill.yes { background: var(--lemon); color: var(--ink); }
+.pill.part { background: var(--paper); color: var(--ink); border: 1.5px solid var(--ink); }
+.pill.no { background: var(--ink); color: var(--paper); }
+.arrow { width: 64px; height: 64px; flex: 0 0 auto; }
+.steps { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 20px; height: 100%; }
+.list { list-style: none; display: grid; gap: 14px; }
+.list li { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; }
+.list li b { font-family: var(--font-mono); font-weight: 400; font-size: 16px; letter-spacing: 0.1em; padding-top: 6px; }
+.bar { display: flex; align-items: flex-end; gap: 10px; height: 100%; }
+.bar i { flex: 1; background: var(--ink); }
+.bar i.y { background: var(--lemon); border: 1.5px solid var(--ink); }
+.kv { display: grid; grid-template-columns: 1fr; gap: 6px; }
+.kv div { display: flex; justify-content: space-between; border-bottom: 1.5px solid currentColor; padding: 10px 0; font-size: 22px; }
+.ink .kv div { border-color: rgba(245,244,239,.35); }
+
+/* ===========================================
+   ANIMATION — 슬라이드 진입 시 .reveal 순차 등장
+   =========================================== */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity var(--duration) var(--ease-out-expo), transform var(--duration) var(--ease-out-expo); }
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+.reveal:nth-child(1) { transition-delay: .05s } .reveal:nth-child(2) { transition-delay: .12s } .reveal:nth-child(3) { transition-delay: .19s }
+.reveal:nth-child(4) { transition-delay: .26s } .reveal:nth-child(5) { transition-delay: .33s } .reveal:nth-child(6) { transition-delay: .40s }
+.reveal:nth-child(7) { transition-delay: .47s } .reveal:nth-child(8) { transition-delay: .54s } .reveal:nth-child(9) { transition-delay: .61s }
+
+/* ===========================================
+   CHROME — 진행바(스테이지 밖) · 편집모드
+   =========================================== */
+.progress { position: fixed; left: 0; bottom: 0; height: 4px; background: var(--lemon); z-index: 1000; transition: width .3s; }
+.deck-controls { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; color: #999; text-transform: uppercase; }
+.edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+.edit-toggle { position: fixed; top: 14px; left: 14px; z-index: 10001; opacity: 0; pointer-events: none; transition: opacity .3s; background: var(--lemon); border: 0; padding: 8px 12px; font-family: var(--font-mono); font-size: 13px; cursor: pointer; }
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+body.editing [contenteditable="true"] { outline: 2px dashed var(--lemon); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<div class="edit-hotzone"></div>
+<button class="edit-toggle" id="editToggle" title="편집 모드 (E) · 저장 Ctrl+S">✎ EDIT</button>
+
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage">
+
+<!-- ================= 01 COVER ================= -->
+<section class="slide active">
+  <div class="frame">
+    <div class="card ink pad-xl reveal" style="grid-column:1/span 7;grid-row:1/span 6">
+      <div class="block lg" style="color:var(--lemon)"><i></i><i></i><i></i><i></i></div>
+      <div class="push">
+        <div class="label dim" style="margin-bottom:22px">PROJECT REPORT · 2026.09</div>
+        <div class="display">중소나라</div>
+        <div class="subtitle" style="margin-top:18px">중소기업 가전 <mark>B2B</mark> 납품몰</div>
+      </div>
+    </div>
+    <div class="card photo reveal" style="grid-column:8/span 5;grid-row:1/span 6"><img src="../img/home-fold.png" alt="중소나라 메인 화면"><span class="tag label-xs">MAIN / 1440×900</span></div>
+    <div class="card lemon reveal" style="grid-column:1/span 4;grid-row:7/span 2">
+      <div class="label-sm">한 줄 요약</div>
+      <div class="card-h3 push">대기업 말고,<br>우리 중소기업 가전.</div>
+    </div>
+    <div class="card reveal" style="grid-column:5/span 5;grid-row:7/span 2">
+      <div class="kv body-sm">
+        <div><span>스택</span><span>Next.js 16 · Tailwind v4</span></div>
+        <div><span>이미지</span><span>Higgsfield AI</span></div>
+        <div><span>상태</span><span>로컬 웹뷰 → 서버 연결 예정</span></div>
+      </div>
+    </div>
+    <div class="card ink reveal" style="grid-column:10/span 3;grid-row:7/span 2;align-items:flex-end;justify-content:flex-end">
+      <div class="qr"><i></i><i class="o"></i><i></i><i class="y"></i><i></i><i class="o"></i><i></i><i class="o"></i><i></i><i class="o"></i><i></i><i class="y"></i><i class="o"></i><i></i><i></i><i class="o"></i><i></i><i class="o"></i><i class="y"></i><i class="o"></i><i></i><i class="o"></i><i></i><i></i><i></i></div>
+    </div>
+  </div>
+  <div class="pagenum lemon">01 / 12</div>
+</section>
+
+<!-- ================= 02 PROBLEM ================= -->
+<section class="slide">
+  <div class="frame">
+    <div class="card pad-lg reveal" style="grid-column:1/span 12;grid-row:1/span 2;justify-content:center">
+      <div class="label-sm dim" style="margin-bottom:10px">01 · 문제 정의</div>
+      <div class="title">가전 유통은 <mark>대기업</mark>이 쥐고 있다</div>
+    </div>
+    <div class="card ink pad-lg reveal" style="grid-column:1/span 4;grid-row:3/span 4">
+      <div class="label-sm dim kicker">제조사 (공급)</div>
+      <div class="card-h">OEM 20년,<br>내 이름은 없다</div>
+      <p class="body-sm push">수십 년 대기업 납품을 해온 중소 제조사는 자기 브랜드로 팔 채널이 사실상 없다. 마진은 유통이 가져간다.</p>
+    </div>
+    <div class="card pad-lg reveal" style="grid-column:5/span 4;grid-row:3/span 4">
+      <div class="label-sm dim kicker">구매자 (수요)</div>
+      <div class="card-h">학원·식당·펜션은<br>"견적"으로 산다</div>
+      <p class="body-sm push">사업자 구매자는 대량·세금계산서·납기 협의가 필요하다. 쿠팡식 B2C 몰에는 그 흐름이 없다.</p>
+    </div>
+    <div class="card lemon pad-lg reveal" style="grid-column:9/span 4;grid-row:3/span 4">
+      <div class="label-sm kicker">기회</div>
+      <div class="card-h">둘 사이를<br>직접 잇는다</div>
+      <p class="body-sm push">중간 유통 없이 제조사가 직접 견적·납품·A/S. 구매자는 공장 단가로 산다.</p>
+    </div>
+    <div class="card reveal" style="grid-column:1/span 3;grid-row:7/span 2;justify-content:flex-end"><div class="stat-sm">126</div><div class="label-sm dim">입점 중소기업 목표</div></div>
+    <div class="card reveal" style="grid-column:4/span 3;grid-row:7/span 2;justify-content:flex-end"><div class="stat-sm">1,840</div><div class="label-sm dim">등록 상품 목표</div></div>
+    <div class="card ink reveal" style="grid-column:7/span 3;grid-row:7/span 2;justify-content:flex-end"><div class="stat-sm">24h</div><div class="label-sm dim">견적 회신 SLA</div></div>
+    <div class="card reveal" style="grid-column:10/span 3;grid-row:7/span 2;justify-content:flex-end"><div class="stat-sm">0</div><div class="label-sm dim">중간 유통 단계</div></div>
+  </div>
+  <div class="pagenum">02 / 12</div>
+</section>
+
+<!-- ================= 03 TARGET & FLOW ================= -->
+<section class="slide">
+  <div class="frame">
+    <div class="card ink pad-lg reveal" style="grid-column:1/span 5;grid-row:1/span 8">
+      <div class="label-sm dim kicker">02 · 타겟과 포지셔닝</div>
+      <div class="title" style="font-size:66px">B2C가 아니라<br><em>B2B</em> 흐름을<br>1급 시민으로</div>
+      <ul class="list body-sm push">
+        <li><b>01</b><span><strong>사업자 전용</strong> — 사업자번호 하나로 견적·세금계산서</span></li>
+        <li><b>02</b><span><strong>MOQ·납기</strong>를 가격만큼 크게 — 대량 구매자의 언어</span></li>
+        <li><b>03</b><span><strong>제조사 스토리</strong> — 이름은 낯설어도 품질은 20년</span></li>
+        <li><b>04</b><span><strong>결제보다 견적</strong> — "담기 → 견적 → 납품"이 메인 CTA</span></li>
+      </ul>
+    </div>
+    <div class="card pad-lg reveal" style="grid-column:6/span 7;grid-row:1/span 5">
+      <div class="label-sm dim kicker">핵심 사용자 흐름</div>
+      <div class="steps">
+        <div class="card lemon pad-sm" style="height:100%;justify-content:flex-end"><div class="label-xs">STEP 1</div><div class="card-h3">담기</div><p class="body-sm">상품·수량(MOQ 이상)</p></div>
+        <svg class="arrow" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5"><path d="M8 32h44M36 16l16 16-16 16"/></svg>
+        <div class="card ink pad-sm" style="height:100%;justify-content:flex-end"><div class="label-xs dim">STEP 2</div><div class="card-h3">견적요청</div><p class="body-sm">사업자 정보·납기·지역</p></div>
+        <svg class="arrow" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5"><path d="M8 32h44M36 16l16 16-16 16"/></svg>
+        <div class="card lemon pad-sm" style="height:100%;justify-content:flex-end"><div class="label-xs">STEP 3</div><div class="card-h3">계약·납품</div><p class="body-sm">견적서 → 전자계약 → 세금계산서</p></div>
+      </div>
+    </div>
+    <div class="card reveal" style="grid-column:6/span 4;grid-row:6/span 3">
+      <div class="label-sm dim kicker">공급자 페르소나</div>
+      <div class="card-h3">청우테크 · 인천</div>
+      <p class="body-sm push">2011년 창업, 공기청정·제습 전문. 자체 필터 라인 보유. 학원 납품 실적은 있으나 브랜드 인지도 0.</p>
+    </div>
+    <div class="card reveal" style="grid-column:10/span 3;grid-row:6/span 3">
+      <div class="label-sm dim kicker">구매자 페르소나</div>
+      <div class="card-h3">학원 원장</div>
+      <p class="body-sm push">교실 12개, 공기청정기 12대. 세금계산서 필수. 가격보다 A/S와 납기.</p>
+    </div>
+  </div>
+  <div class="pagenum invert">03 / 12</div>
+</section>
+
+<!-- ================= 04 RESEARCH ================= -->
+<section class="slide">
+  <div class="frame">
+    <div class="card pad-lg reveal" style="grid-column:1/span 8;grid-row:1/span 2;justify-content:center">
+      <div class="label-sm dim" style="margin-bottom:10px">03 · 리서치 — 오픈소스 커머스 비교</div>
+      <div class="title" style="font-size:64px">B2B 기능이 있는 건 <mark>Medusa</mark>뿐이었다</div>
+    </div>
+    <div class="card ink pad-lg reveal" style="grid-column:9/span 4;grid-row:1/span 2;justify-content:center">
+      <div class="label-sm dim">선정</div>
+      <div class="card-h">Medusa v2<br>b2b-starter</div>
+    </div>
+    <div class="card reveal" style="grid-column:1/span 12;grid-row:3/span 5;padding:0">
+      <table>
+        <thead><tr><th>플랫폼</th><th>GitHub</th><th>라이선스</th><th>B2B(회사계정·견적)</th><th>국내 PG 자유도</th><th>판단</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Medusa v2</strong> + b2b-starter</td><td>~30k★</td><td><span class="pill yes">MIT</span></td><td><span class="pill yes">있음</span></td><td><span class="pill yes">플러그인</span></td><td>채택 — 백엔드 목적지</td></tr>
+          <tr><td>Vercel Commerce</td><td>11k★</td><td><span class="pill yes">MIT</span></td><td><span class="pill no">없음</span></td><td><span class="pill no">Shopify 종속</span></td><td>디자인 참고만</td></tr>
+          <tr><td>EverShop</td><td>~10k★</td><td><span class="pill part">GPLv3</span></td><td><span class="pill part">얇음</span></td><td><span class="pill part">가능</span></td><td>올인원이나 B2B 부족</td></tr>
+          <tr><td>Vendure v3</td><td>~8k★</td><td><span class="pill part">GPLv3</span></td><td><span class="pill yes">강함</span></td><td><span class="pill part">가능</span></td><td>러닝커브·라이선스</td></tr>
+          <tr><td>Saleor</td><td>—</td><td><span class="pill part">BSD</span></td><td><span class="pill part">일부</span></td><td><span class="pill part">앱</span></td><td>Python 스택, 운영 무거움</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card lemon reveal" style="grid-column:1/span 12;grid-row:8/span 1;flex-direction:row;align-items:center;gap:24px">
+      <span class="label-sm">결정</span><span class="body">프론트는 Next.js로 먼저 만들고, 데이터 형태만 Medusa product/variant에 맞춰 둔다 → 나중에 fetch만 교체</span>
+    </div>
+  </div>
+  <div class="pagenum">04 / 12</div>
+</section>
+
+<!-- ================= 05 ARCHITECTURE ================= -->
+<section class="slide">
+  <div class="frame">
+    <div class="card ink pad-lg reveal" style="grid-column:1/span 12;grid-row:1/span 2;justify-content:center">
+      <div class="label-sm dim" style="margin-bottom:10px">04 · 아키텍처</div>
+      <div class="title" style="font-size:64px">"<em>보이는 것부터</em>" — 로컬 웹뷰 먼저, 서버는 나중에</div>
+    </div>
+    <div class="card pad-lg reveal" style="grid-column:1/span 3;grid-row:3/span 3"><div class="label-sm dim kicker">프레임워크</div><div class="card-h3">Next.js 16<br>App Router</div><p class="body-sm push">RSC + 정적 생성. 상품 20종 SSG, 목록은 searchParams 동적</p></div>
+    <div class="card pad-lg reveal" style="grid-column:4/span 3;grid-row:3/span 3"><div class="label-sm dim kicker">스타일</div><div class="card-h3">Tailwind v4<br>@theme / @utility</div><p class="body-sm push">토큰 한 곳. btn·card·chip 유틸리티. Pretendard 단일 서체</p></div>
+    <div class="card lemon pad-lg reveal" style="grid-column:7/span 3;grid-row:3/span 3"><div class="label-sm kicker">데이터</div><div class="card-h3">lib/data.ts<br>Medusa 호환</div><p class="body-sm push">카테고리 6 · 브랜드 6 · 상품 20. handle = URL = 이미지 파일명</p></div>
+    <div class="card pad-lg reveal" style="grid-column:10/span 3;grid-row:3/span 3"><div class="label-sm dim kicker">상태</div><div class="card-h3">localStorage<br>cart · quotes</div><p class="body-sm push">useSyncExternalStore. 서버 연결 지점은 코드에 표시</p></div>
+    <div class="card ink pad-lg reveal" style="grid-column:1/span 6;grid-row:6/span 3">
+      <div class="label-sm dim kicker">이미지 파이프라인</div>
+      <div class="card-h3">Higgsfield → public/img → &lt;Img&gt; 폴백</div>
+      <p class="body-sm push">프롬프트는 데이터 파일 안에. 이미지가 없으면 타이포 타일로 폴백 → 이미지 없이도 완성돼 보인다</p>
+    </div>
+    <div class="card pad-lg reveal" style="grid-column:7/span 6;grid-row:6/span 3">
+      <div class="label-sm dim kicker">디렉터리</div>
+      <pre class="body-sm" style="font-family:var(--font-mono);font-size:19px;line-height:1.45">app/ page · products/[handle] · cart · quote · brands
+components/ Header · ProductCard · AddToCart · Img
+lib/ data.ts · cart.ts      scripts/ gen-images.mjs
+docs/ 설명서 · 포트폴리오 · slides</pre>
+    </div>
+  </div>
+  <div class="pagenum invert">05 / 12</div>
+</section>
+
+<!-- ================= 06 DESIGN SYSTEM ================= -->
+<section class="slide">
+  <div class="frame">
+    <div class="card pad-lg reveal" style="grid-column:1/span 5;grid-row:1/span 3;justify-content:center">
+      <div class="label-sm dim" style="margin-bottom:10px">05 · 디자인 시스템</div>
+      <div class="title" style="font-size:60px">쿠팡이 아니라<br><mark>Linear</mark> 톤으로</div>
+    </div>
+    <div class="card photo reveal" style="grid-column:6/span 7;grid-row:1/span 5"><img src="../img/home.png" alt="메인 전체" style="object-position:top"><span class="tag label-xs">HOME / FULL PAGE</span></div>
+    <div class="card ink pad-lg reveal" style="grid-column:1/span 5;grid-row:4/span 2">
+      <div class="label-sm dim kicker">2026 트렌드 반영</div>
+      <p class="body-sm">미니멀 + <strong>벤토 그리드</strong> 히어로 + 마이크로 인터랙션(hover lift). B2B 신뢰감을 위해 빽빽한 배너 대신 여백과 위계.</p>
+    </div>
+    <div class="card pad-sm reveal" style="grid-column:1/span 2;grid-row:6/span 3;justify-content:flex-end"><div style="height:64px;background:#12305b;margin-bottom:12px"></div><div class="label-xs dim">NAVY</div><div class="body-sm">#12305B<br>주색·로고·버튼</div></div>
+    <div class="card pad-sm reveal" style="grid-column:3/span 2;grid-row:6/span 3;justify-content:flex-end"><div style="height:64px;background:#ff7a1a;margin-bottom:12px"></div><div class="label-xs dim">ORANGE</div><div class="body-sm">#FF7A1A<br>견적 CTA 전용</div></div>
+    <div class="card pad-sm reveal" style="grid-column:5/span 2;grid-row:6/span 3;justify-content:flex-end"><div style="height:64px;background:#f6f6f3;border:1.5px solid #0A0A0A;margin-bottom:12px"></div><div class="label-xs dim">BG</div><div class="body-sm">#F6F6F3<br>웜 오프화이트</div></div>
+    <div class="card lemon pad-lg reveal" style="grid-column:7/span 3;grid-row:6/span 3"><div class="label-sm kicker">서체</div><div class="card-h3">Pretendard<br>Variable</div><p class="body-sm push">제목 800 · 본문 400. 한 서체로 위계</p></div>
+    <div class="card pad-lg reveal" style="grid-column:10/span 3;grid-row:6/span 3"><div class="label-sm dim kicker">형태</div><div class="card-h3">rounded 20px<br>chip · btn-pill</div><p class="body-sm push">그림자 최소, 선 1px #E6E6E1</p></div>
+  </div>
+  <div class="pagenum">06 / 12</div>
+</section>
+
+<!-- ================= 07 SCREEN: HOME ================= -->
+<section class="slide">
+  <div class="frame">
+    <div class="card photo reveal" style="grid-column:1/span 8;grid-row:1/span 8"><img src="../img/home-fold.png" alt="메인 상단"><span class="tag label-xs">/ · HERO BENTO</span></div>
+    <div class="card ink pad-lg reveal" style="grid-column:9/span 4;grid-row:1/span 2;justify-content:center"><div class="label-sm dim">06 · 화면</div><div class="card-h">메인</div></div>
+    <div class="card pad-lg reveal" style="grid-column:9/span 4;grid-row:3/span 2"><div class="label-xs dim kicker">A · 벤토 히어로</div><p class="body-sm">메시지 + 통계 4 + 즉시납품 / 이달의 입점기업 타일. CTA는 견적요청이 1순위</p></div>
+    <div class="card lemon pad-lg reveal" style="grid-column:9/span 4;grid-row:5/span 2"><div class="label-xs kicker">B · 카테고리 6 · 납품 베스트</div><p class="body-sm">사업자 구매 기준 상위 4품목. 카드에 MOQ·납기 상시 노출</p></div>
+    <div class="card pad-lg reveal" style="grid-column:9/span 4;grid-row:7/span 2"><div class="label-xs dim kicker">C · 입점기업 · 프로세스 · CTA</div><p class="body-sm">"이름은 낯설어도 품질은 20년" 스토리 → 3단계 납품 → 견적 배너</p></div>
+  </div>
+  <div class="pagenum invert">07 / 12</div>
+</section>
+
+<!-- ================= 08 SCREEN: PRODUCTS ================= -->
+<section class="slide">
+  <div class="frame">
+    <div class="card ink pad-lg reveal" style="grid-column:1/span 12;grid-row:1/span 1;flex-direction:row;align-items:center;gap:28px"><span class="label-sm dim">07 · 화면</span><span class="card-h" style="font-size:36px">상품 목록 · 상세</span></div>
+    <div class="card photo reveal" style="grid-column:1/span 6;grid-row:2/span 5"><img src="../img/products.png" alt="상품 목록"><span class="tag label-xs">/products</span></div>
+    <div class="card photo reveal" style="grid-column:7/span 6;grid-row:2/span 5"><img src="../img/product.png" alt="상품 상세"><span class="tag label-xs">/products/[handle]</span></div>
+    <div class="card pad-lg reveal" style="grid-column:1/span 3;grid-row:7/span 2"><div class="label-xs dim kicker">필터</div><p class="body-sm">카테고리 · 제조사 · 즉시납품 · 검색(제목/사양/브랜드)</p></div>
+    <div class="card lemon pad-lg reveal" style="grid-column:4/span 3;grid-row:7/span 2"><div class="label-xs kicker">B2B 카드</div><p class="body-sm">가격 옆에 <strong>최소 N개 · 납기</strong>를 항상. 배지: 베스트 / 즉시납품 / 신제품</p></div>
+    <div class="card pad-lg reveal" style="grid-column:7/span 3;grid-row:7/span 2"><div class="label-xs dim kicker">상세</div><p class="body-sm">사양 그리드 · 제조사 카드 · 세금계산서/AS/배송 3칸</p></div>
+    <div class="card ink pad-lg reveal" style="grid-column:10/span 3;grid-row:7/span 2"><div class="label-xs dim kicker">수량 패널</div><p class="body-sm">MOQ 미만 불가 · 합계 실시간 · "이 수량으로 견적요청"</p></div>
+  </div>
+  <div class="pagenum">08 / 12</div>
+</section>
+
+<!-- ================= 09 SCREEN: CART & QUOTE ================= -->
+<section class="slide">
+  <div class="frame">
+    <div class="card lemon pad-lg reveal" style="grid-column:1/span 5;grid-row:1/span 3;justify-content:center">
+      <div class="label-sm" style="margin-bottom:10px">08 · 화면</div>
+      <div class="title" style="font-size:58px">장바구니는<br>견적서의 초안</div>
+    </div>
+    <div class="card photo reveal" style="grid-column:6/span 7;grid-row:1/span 8"><img src="../img/quote.png" alt="견적요청"><span class="tag label-xs">/quote</span></div>
+    <div class="card ink pad-lg reveal" style="grid-column:1/span 5;grid-row:4/span 3">
+      <div class="label-sm dim kicker">견적 폼 = 3블록</div>
+      <ul class="list body-sm">
+        <li><b>01</b><span>사업자 정보 — 회사·사업자번호·담당자·연락처·이메일</span></li>
+        <li><b>02</b><span>납품 조건 — 희망 납기·지역·요청사항</span></li>
+        <li><b>03</b><span>요청 품목 — 장바구니에서 자동 첨부, 수량·금액 표시</span></li>
+      </ul>
+    </div>
+    <div class="card pad-lg reveal" style="grid-column:1/span 5;grid-row:7/span 2;flex-direction:row;align-items:center;gap:24px">
+      <div class="stat-sm" style="font-size:72px">Q</div>
+      <p class="body-sm">접수번호 발급 → 24h 내 제조사 회신. 결제(토스/포트원)는 서버 연결 후 "바로 주문" 활성화</p>
+    </div>
+  </div>
+  <div class="pagenum invert">09 / 12</div>
+</section>
+
+<!-- ================= 10 HIGGSFIELD ================= -->
+<section class="slide">
+  <div class="frame">
+    <div class="card ink pad-lg reveal" style="grid-column:1/span 7;grid-row:1/span 3;justify-content:center">
+      <div class="label-sm dim" style="margin-bottom:10px">09 · AI 이미지 파이프라인</div>
+      <div class="title" style="font-size:60px"><em>Higgsfield</em> 한 번에<br>이미지 22장</div>
+    </div>
+    <div class="card lemon reveal" style="grid-column:8/span 5;grid-row:1/span 3;justify-content:flex-end"><div class="stat">22</div><div class="label-sm">로고 2 · 히어로 2 · 상품 20 · 프롬프트 in data.ts</div></div>
+    <div class="card pad-lg reveal" style="grid-column:1/span 4;grid-row:4/span 3"><div class="label-xs dim kicker">1 · 프롬프트</div><div class="card-h3">데이터 옆에 둔다</div><p class="body-sm push">상품마다 <code>look</code> 한 줄 → 공통 스튜디오 프롬프트로 합성. 로고는 3D 아이콘 + 한글 워드마크</p></div>
+    <div class="card pad-lg reveal" style="grid-column:5/span 4;grid-row:4/span 3"><div class="label-xs dim kicker">2 · 생성</div><div class="card-h3">npm run gen:images</div><p class="body-sm push">@higgsfield/client · 동시 3 · 있는 파일 스킵 · 모델 교체 <code>HF_MODEL</code></p></div>
+    <div class="card ink pad-lg reveal" style="grid-column:9/span 4;grid-row:4/span 3"><div class="label-xs dim kicker">3 · 폴백</div><div class="card-h3">&lt;Img&gt; 컴포넌트</div><p class="body-sm push">없으면 타이포 타일. 로고는 SVG 마크로. 하이드레이션 전 404도 감지</p></div>
+    <div class="card pad-lg reveal" style="grid-column:1/span 8;grid-row:7/span 2;flex-direction:row;align-items:center;gap:24px">
+      <span class="label-sm">주의</span><p class="body-sm">AI 모델은 한글 텍스트를 잘 깨뜨린다 → 워드마크는 텍스트에 강한 모델(Ideogram 계열)로 재생성 가능하게 열어 둠. API 키는 <code>.env.local</code>, 커밋 금지</p>
+    </div>
+    <div class="card lemon reveal" style="grid-column:9/span 4;grid-row:7/span 2;justify-content:center"><div class="label-xs">STATUS</div><div class="card-h3">키 발급 후 실행 대기</div></div>
+  </div>
+  <div class="pagenum">10 / 12</div>
+</section>
+
+<!-- ================= 11 TROUBLESHOOTING ================= -->
+<section class="slide">
+  <div class="frame">
+    <div class="card pad-lg reveal" style="grid-column:1/span 12;grid-row:1/span 2;justify-content:center">
+      <div class="label-sm dim" style="margin-bottom:10px">10 · 트러블슈팅</div>
+      <div class="title" style="font-size:64px">막혔던 <mark>4가지</mark>와 한 줄 해결</div>
+    </div>
+    <div class="card ink pad-lg reveal" style="grid-column:1/span 6;grid-row:3/span 3"><div class="label-xs dim kicker">#1 · Tailwind v4</div><div class="card-h3">@apply가 커스텀 클래스를 모른다</div><p class="body-sm push"><code>.btn{@apply…}</code> → 다른 곳에서 <code>@apply btn</code> 하면 에러. v4는 <code>@utility btn{…}</code>로 선언</p></div>
+    <div class="card pad-lg reveal" style="grid-column:7/span 6;grid-row:3/span 3"><div class="label-xs dim kicker">#2 · React</div><div class="card-h3">SSR 이미지 404를 onError가 놓친다</div><p class="body-sm push">하이드레이션 전 실패는 이벤트가 안 온다 → 마운트 시 <code>img.complete && naturalWidth===0</code> 재확인</p></div>
+    <div class="card pad-lg reveal" style="grid-column:1/span 6;grid-row:6/span 3"><div class="label-xs dim kicker">#3 · AI 이미지</div><div class="card-h3">한글 워드마크가 깨진다</div><p class="body-sm push">모델 한계. <code>HF_MODEL</code>로 텍스트 강한 모델로 교체 가능하게, 실패해도 SVG 로고 폴백</p></div>
+    <div class="card lemon pad-lg reveal" style="grid-column:7/span 6;grid-row:6/span 3"><div class="label-xs kicker">#4 · 캡처</div><div class="card-h3">dev 서버는 하이드레이션 전에 찍힌다</div><p class="body-sm push">문서용 스크린샷은 <code>next build && next start</code> + 헤드리스 Edge <code>--screenshot</code></p></div>
+  </div>
+  <div class="pagenum">11 / 12</div>
+</section>
+
+<!-- ================= 12 ROADMAP & CLOSE ================= -->
+<section class="slide">
+  <div class="frame">
+    <div class="card ink pad-lg reveal" style="grid-column:1/span 5;grid-row:1/span 8">
+      <div class="label-sm dim kicker">11 · 로드맵</div>
+      <ul class="list body-sm">
+        <li><b>01</b><span><strong>Medusa b2b-starter</strong> 연결 — 회사 계정·직원 초대·지출 한도</span></li>
+        <li><b>02</b><span><strong>견적 모듈</strong> — localStorage → POST /api/quotes, 메시징·수락</span></li>
+        <li><b>03</b><span><strong>결제</strong> — 토스페이먼츠/포트원 어댑터, "바로 주문" 활성화</span></li>
+        <li><b>04</b><span><strong>Higgsfield</strong> 이미지 생성 실행 (키 발급 후)</span></li>
+        <li><b>05</b><span><strong>배포</strong> — GitHub → Vercel 자동 배포, 도메인</span></li>
+        <li><b>06</b><span><strong>사업자 인증</strong> — 사업자번호 진위 확인 API</span></li>
+      </ul>
+      <div class="push label-sm dim">docs/설명서.md · docs/포트폴리오.md</div>
+    </div>
+    <div class="card lemon pad-xl reveal" style="grid-column:6/span 7;grid-row:1/span 5;justify-content:center">
+      <div class="display" style="font-size:96px">대기업 말고,<br>우리 중소기업<br>가전.</div>
+    </div>
+    <div class="card pad-lg reveal" style="grid-column:6/span 4;grid-row:6/span 3;justify-content:flex-end">
+      <div class="label-xs dim kicker">배운 것</div>
+      <p class="body-sm">"서버부터"가 아니라 "보이는 것부터". 데이터 형태만 목적지에 맞추면 버리는 코드가 없다.</p>
+    </div>
+    <div class="card ink reveal" style="grid-column:10/span 3;grid-row:6/span 3;justify-content:space-between">
+      <div class="block" style="color:var(--lemon)"><i></i><i></i><i></i><i></i></div>
+      <div><div class="label-xs dim">JUNGSONARA</div><div class="label-sm">2026 · 09</div></div>
+    </div>
+  </div>
+  <div class="pagenum lemon">12 / 12</div>
+</section>
+
+</main>
+</div>
+<div class="progress" id="progress"></div>
+<div class="deck-controls" id="counter">01 / 12</div>
+
+<script>
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   키보드(←→ Space PgUp/PgDn Home/End) · 휠 · 스와이프 · 해시(#5) · 편집모드(E)
+   =========================================== */
+class SlidePresentation {
+  constructor() {
+    this.slides = [...document.querySelectorAll('.slide')];
+    this.stage = document.getElementById('deckStage');
+    this.i = 0;
+    this.setupStageScale();
+    this.setupKeyboardNav();
+    this.setupTouchNav();
+    this.setupWheel();
+    const h = parseInt(location.hash.slice(1), 10);
+    this.show(Number.isFinite(h) ? h - 1 : 0);
+  }
+  setupStageScale() {
+    const scale = () => {
+      const f = Math.min(innerWidth / 1920, innerHeight / 1080);
+      this.stage.style.transform = `translate(${(innerWidth - 1920 * f) / 2}px, ${(innerHeight - 1080 * f) / 2}px) scale(${f})`;
+    };
+    scale(); addEventListener('resize', scale);
+  }
+  setupKeyboardNav() {
+    addEventListener('keydown', (e) => {
+      if (document.body.classList.contains('editing') && e.target.isContentEditable) return;
+      const k = e.key;
+      if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(k)) { e.preventDefault(); this.show(this.i + 1); }
+      else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(k)) { e.preventDefault(); this.show(this.i - 1); }
+      else if (k === 'Home') this.show(0);
+      else if (k === 'End') this.show(this.slides.length - 1);
+    });
+  }
+  setupTouchNav() {
+    let x0 = 0;
+    addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+    addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) this.show(this.i + (dx < 0 ? 1 : -1));
+    });
+  }
+  setupWheel() {
+    let t = 0;
+    addEventListener('wheel', (e) => {
+      const now = Date.now(); if (now - t < 500 || Math.abs(e.deltaY) < 20) return; t = now;
+      this.show(this.i + (e.deltaY > 0 ? 1 : -1));
+    }, { passive: true });
+  }
+  show(n) {
+    this.i = Math.max(0, Math.min(n, this.slides.length - 1));
+    this.slides.forEach((s, k) => { s.classList.toggle('active', k === this.i); s.classList.toggle('visible', k === this.i); });
+    history.replaceState(null, '', '#' + (this.i + 1));
+    const p = String(this.i + 1).padStart(2, '0');
+    document.getElementById('counter').textContent = `${p} / ${String(this.slides.length).padStart(2, '0')}`;
+    document.getElementById('progress').style.width = ((this.i + 1) / this.slides.length * 100) + '%';
+  }
+}
+
+/* ===========================================
+   INLINE EDITOR — E키/좌상단 핫존. 텍스트 클릭해 수정, Ctrl+S 로 HTML 저장
+   =========================================== */
+class InlineEditor {
+  constructor() {
+    this.isActive = false;
+    this.key = 'jsn-slides-edits';
+    this.btn = document.getElementById('editToggle');
+    const hot = document.querySelector('.edit-hotzone');
+    let hide = null;
+    const showBtn = () => { clearTimeout(hide); this.btn.classList.add('show'); };
+    const hideBtn = () => { hide = setTimeout(() => { if (!this.isActive) this.btn.classList.remove('show'); }, 400); };
+    hot.addEventListener('mouseenter', showBtn); hot.addEventListener('mouseleave', hideBtn);
+    this.btn.addEventListener('mouseenter', showBtn); this.btn.addEventListener('mouseleave', hideBtn);
+    hot.addEventListener('click', () => this.toggle());
+    this.btn.addEventListener('click', () => this.toggle());
+    addEventListener('keydown', (e) => {
+      if ((e.key === 'e' || e.key === 'E') && !e.target.isContentEditable && !e.ctrlKey) this.toggle();
+      if (e.ctrlKey && e.key === 's') { e.preventDefault(); this.download(); }
+    });
+    this.restore();
+  }
+  els() { return document.querySelectorAll('.slide h1, .slide h2, .slide p, .slide div.display, .slide div.title, .slide div.subtitle, .slide div.card-h, .slide div.card-h3, .slide span, .slide td, .slide li, .slide .stat, .slide .stat-sm'); }
+  toggle() {
+    this.isActive = !this.isActive;
+    document.body.classList.toggle('editing', this.isActive);
+    this.btn.classList.toggle('active', this.isActive);
+    this.btn.textContent = this.isActive ? '✓ DONE (Ctrl+S 저장)' : '✎ EDIT';
+    this.els().forEach((el) => el.contentEditable = this.isActive ? 'true' : 'false');
+    if (!this.isActive) this.save();
+  }
+  save() { localStorage.setItem(this.key, document.getElementById('deckStage').innerHTML); }
+  restore() { const s = localStorage.getItem(this.key); if (s) document.getElementById('deckStage').innerHTML = s; }
+  download() {
+    this.els().forEach((el) => el.removeAttribute('contenteditable'));
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' })); a.download = 'index.html'; a.click();
+  }
+}
+
+const editor = new InlineEditor();
+new SlidePresentation();
+</script>
+</body>
+</html>
