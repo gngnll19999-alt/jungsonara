@@ -18,7 +18,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
   return (
     <div className="container-x py-8">
-      <nav className="mb-5 flex gap-2 text-sm text-muted">
+      <nav className="mb-5 flex gap-2 text-sm text-ink-muted">
         <Link href="/products" className="hover:text-navy">전체상품</Link><span>/</span>
         <Link href={`/products?category=${cat.handle}`} className="hover:text-navy">{cat.name}</Link><span>/</span>
         <span className="text-ink">{p.title}</span>
@@ -29,10 +29,10 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
         <div className="md:col-span-4">
           <div className="flex items-center gap-2">
             {p.badge && <span className="chip">{p.badge}</span>}
-            <Link href={`/products?brand=${brand.handle}`} className="text-sm text-muted hover:text-navy">{brand.name} · {brand.region}</Link>
+            <Link href={`/products?brand=${brand.handle}`} className="text-sm text-ink-muted hover:text-navy">{brand.name} · {brand.region}</Link>
           </div>
           <h1 className="mt-2 text-2xl font-extrabold leading-tight md:text-3xl">{p.title}</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-muted">{p.desc}</p>
+          <p className="mt-3 text-[15px] leading-relaxed text-ink-muted">{p.desc}</p>
 
           <h2 className="mt-8 text-sm font-semibold">주요 사양</h2>
           <ul className="mt-2 grid grid-cols-2 gap-2">
@@ -43,15 +43,15 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
           <div className="card mt-2 flex gap-4 p-4">
             <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-navy font-extrabold text-white">{brand.name[0]}</div>
             <div>
-              <div className="font-bold">{brand.name} <span className="text-xs font-normal text-muted">since {brand.since}</span></div>
-              <p className="text-sm text-muted">{brand.blurb}</p>
+              <div className="font-bold">{brand.name} <span className="text-xs font-normal text-ink-muted">since {brand.since}</span></div>
+              <p className="text-sm text-ink-muted">{brand.blurb}</p>
               <div className="mt-2 flex gap-1.5">{brand.tags.map((t) => <span key={t} className="chip">{t}</span>)}</div>
             </div>
           </div>
 
           <div className="mt-8 grid grid-cols-3 gap-2 text-center text-xs">
             {[["세금계산서", "즉시 발행"], ["A/S", "제조사 직접"], ["배송", "화물/택배 선택"]].map(([k, v]) => (
-              <div key={k} className="rounded-lg bg-surface py-3"><div className="text-muted">{k}</div><div className="mt-0.5 font-semibold">{v}</div></div>
+              <div key={k} className="rounded-lg bg-surface py-3"><div className="text-ink-muted">{k}</div><div className="mt-0.5 font-semibold">{v}</div></div>
             ))}
           </div>
         </div>

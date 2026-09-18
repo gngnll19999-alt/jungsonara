@@ -25,21 +25,21 @@ export default async function Products({ searchParams }: { searchParams: SP }) {
   return (
     <div className="container-x grid gap-8 py-8 md:grid-cols-[200px_1fr]">
       <aside className="hidden md:block">
-        <div className="mb-2 px-3 text-xs font-semibold text-muted">카테고리</div>
+        <div className="mb-2 px-3 text-xs font-semibold text-ink-muted">카테고리</div>
         {side("/products", "전체", !category && !brand && !lead)}
         {categories.map((c) => side(`/products?category=${c.handle}`, c.name, category === c.handle))}
-        <div className="mb-2 mt-6 px-3 text-xs font-semibold text-muted">제조사</div>
+        <div className="mb-2 mt-6 px-3 text-xs font-semibold text-ink-muted">제조사</div>
         {brands.map((b) => side(`/products?brand=${b.handle}`, b.name, brand === b.handle))}
-        <div className="mb-2 mt-6 px-3 text-xs font-semibold text-muted">납기</div>
+        <div className="mb-2 mt-6 px-3 text-xs font-semibold text-ink-muted">납기</div>
         {side("/products?lead=즉시", "즉시납품", lead === "즉시")}
       </aside>
       <div>
         <div className="mb-5 flex items-end justify-between">
           <h1 className="text-2xl font-bold">{title}</h1>
-          <span className="text-sm text-muted">{list.length}개</span>
+          <span className="text-sm text-ink-muted">{list.length}개</span>
         </div>
         {list.length === 0 ? (
-          <div className="card p-16 text-center text-muted">조건에 맞는 상품이 없습니다. <Link href="/quote" className="text-navy underline">견적요청</Link>으로 문의해 주세요.</div>
+          <div className="card p-16 text-center text-ink-muted">조건에 맞는 상품이 없습니다. <Link href="/quote" className="text-navy underline">견적요청</Link>으로 문의해 주세요.</div>
         ) : (
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
             {list.map((p) => <ProductCard key={p.id} p={p} />)}

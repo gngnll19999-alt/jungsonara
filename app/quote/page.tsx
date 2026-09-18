@@ -6,7 +6,7 @@ import { byHandle, won } from "@/lib/data";
 
 const F = ({ label, name, type = "text", required = true, placeholder = "", className = "" }: { label: string; name: string; type?: string; required?: boolean; placeholder?: string; className?: string }) => (
   <label className={`block ${className}`}>
-    <span className="text-sm font-semibold">{label}{required && <span className="text-accent"> *</span>}</span>
+    <span className="text-sm font-semibold">{label}{required && <span className="text-orange"> *</span>}</span>
     <input name={name} type={type} required={required} placeholder={placeholder} className="mt-1.5 h-11 w-full rounded-lg border border-line bg-surface px-3 text-sm outline-none focus:border-navy" />
   </label>
 );
@@ -32,7 +32,7 @@ export default function QuotePage() {
       <div className="container-x py-24 text-center">
         <div className="text-5xl">📨</div>
         <h1 className="mt-4 text-2xl font-bold">견적요청이 접수되었습니다</h1>
-        <p className="mt-2 text-muted">접수번호 <b className="text-ink">{sent}</b> · 담당 제조사가 24시간 내 회신드립니다.</p>
+        <p className="mt-2 text-ink-muted">접수번호 <b className="text-ink">{sent}</b> · 담당 제조사가 24시간 내 회신드립니다.</p>
         <Link href="/products" className="btn-primary mt-6">계속 둘러보기</Link>
       </div>
     );
@@ -42,7 +42,7 @@ export default function QuotePage() {
     <div className="container-x grid gap-8 py-8 md:grid-cols-[1fr_340px]">
       <form onSubmit={submit} className="card p-6 md:p-8">
         <h1 className="text-2xl font-bold">견적요청</h1>
-        <p className="mt-1 text-sm text-muted">사업자 정보와 필요 수량을 알려주시면 제조사가 직접 견적서를 보내드립니다.</p>
+        <p className="mt-1 text-sm text-ink-muted">사업자 정보와 필요 수량을 알려주시면 제조사가 직접 견적서를 보내드립니다.</p>
 
         <h2 className="mt-8 text-sm font-bold text-navy">사업자 정보</h2>
         <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -63,23 +63,23 @@ export default function QuotePage() {
           </label>
         </div>
 
-        <label className="mt-6 flex items-start gap-2 text-sm text-muted">
+        <label className="mt-6 flex items-start gap-2 text-sm text-ink-muted">
           <input type="checkbox" required className="mt-1" />
           <span>견적 산출을 위해 입력한 정보를 해당 제조사에 전달하는 것에 동의합니다.</span>
         </label>
-        <button className="btn-accent mt-6 w-full sm:w-auto">견적요청 보내기</button>
+        <button className="btn-orange mt-6 w-full sm:w-auto">견적요청 보내기</button>
       </form>
 
       <aside className="card h-fit p-5 md:sticky md:top-32">
-        <div className="font-bold">요청 품목 <span className="text-sm font-normal text-muted">{lines.length}개</span></div>
+        <div className="font-bold">요청 품목 <span className="text-sm font-normal text-ink-muted">{lines.length}개</span></div>
         {lines.length === 0 ? (
-          <p className="mt-3 text-sm text-muted">담긴 품목이 없어도 요청사항에 적어 보내실 수 있습니다. <Link href="/products" className="text-navy underline">상품 담기</Link></p>
+          <p className="mt-3 text-sm text-ink-muted">담긴 품목이 없어도 요청사항에 적어 보내실 수 있습니다. <Link href="/products" className="text-navy underline">상품 담기</Link></p>
         ) : (
           <ul className="mt-3 divide-y divide-line">
             {lines.map(({ p, qty }) => (
               <li key={p.handle} className="flex justify-between gap-3 py-2.5 text-sm">
                 <span className="line-clamp-1">{p.title}</span>
-                <span className="shrink-0 text-muted">{qty}개 · {won(p.price * qty)}</span>
+                <span className="shrink-0 text-ink-muted">{qty}개 · {won(p.price * qty)}</span>
               </li>
             ))}
           </ul>

@@ -70,8 +70,6 @@ export const products: Product[] = [
 ];
 
 export const heroPrompts = {
-  logoIcon: "3D app icon logo for a Korean B2B marketplace called Jungsonara: a glossy rounded navy blue cube with a small warm-orange house/factory silhouette embossed on the front, soft studio lighting, subtle reflections, isometric front view, centered, pure white background, no text, high detail, 1:1",
-  logoWordmark: "3D typographic logo of the Korean word \"중소나라\" rendered exactly and legibly in bold rounded Korean Hangul letters, glossy navy blue extruded 3D text with warm orange edge highlights, soft studio lighting, front view, centered on a pure white background, nothing else, no extra characters, wide 16:9",
   hero: "Wide editorial hero photo for a Korean B2B home-appliance marketplace: a bright modern showroom table with a neat arrangement of small appliances (rice cooker, air purifier, circulator fan, coffee machine), navy and warm orange accents, soft natural light, minimal, premium, no text, 16:9, photorealistic",
   brands: "Documentary-style photo inside a clean Korean small-factory assembly line for home appliances, workers in navy uniforms inspecting an air purifier, bright daylight, shallow depth of field, no text, 4:3, photorealistic",
 };

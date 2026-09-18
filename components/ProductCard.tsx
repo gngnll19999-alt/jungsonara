@@ -28,13 +28,13 @@ export default function ProductCard({ p }: { p: Product }) {
       <ProductImage p={p} className="aspect-square" />
       <div className="flex flex-1 flex-col gap-1.5 p-4">
         <div className="flex items-center gap-1.5">
-          {p.badge && <span className={`chip ${p.badge === "즉시납품" ? "bg-accent-soft text-accent" : ""}`}>{p.badge}</span>}
-          <span className="text-xs text-muted">{brandOf(p).name}</span>
+          {p.badge && <span className={`chip ${p.badge === "즉시납품" ? "bg-orange-soft text-orange" : ""}`}>{p.badge}</span>}
+          <span className="text-xs text-ink-muted">{brandOf(p).name}</span>
         </div>
         <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug group-hover:text-navy">{p.title}</h3>
         <div className="mt-auto pt-2">
-          <div className="text-lg font-extrabold">{won(p.price)} <span className="text-xs font-normal text-muted">/ 개 (VAT별도)</span></div>
-          <div className="text-xs text-muted">최소 {p.moq}개 · 납기 {p.lead}</div>
+          <div className="text-lg font-extrabold">{won(p.price)} <span className="text-xs font-normal text-ink-muted">/ 개 (VAT별도)</span></div>
+          <div className="text-xs text-ink-muted">최소 {p.moq}개 · 납기 {p.lead}</div>
         </div>
       </div>
     </Link>

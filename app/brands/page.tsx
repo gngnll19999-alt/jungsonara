@@ -8,7 +8,7 @@ export default function BrandsPage() {
         <div className="md:col-span-7">
           <span className="chip">입점 중소기업</span>
           <h1 className="mt-3 text-3xl font-extrabold leading-tight md:text-4xl">대기업 OEM 수십 년,<br />이제 자기 이름으로 납품합니다.</h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-muted">
             중소나라 입점 제조사는 KC 인증·ISO·조달등록 등 서류 심사와 현장 실사를 거칩니다. 중간 유통 없이 제조사가 직접 견적·납품·A/S를 책임집니다.
           </p>
         </div>
@@ -24,10 +24,10 @@ export default function BrandsPage() {
                 <div className="grid size-12 place-items-center rounded-xl bg-navy text-lg font-extrabold text-white">{b.name[0]}</div>
                 <div>
                   <div className="font-bold">{b.name}</div>
-                  <div className="text-xs text-muted">{b.region} · since {b.since}</div>
+                  <div className="text-xs text-ink-muted">{b.region} · since {b.since}</div>
                 </div>
               </div>
-              <p className="mt-4 text-sm leading-relaxed text-muted">{b.blurb}</p>
+              <p className="mt-4 text-sm leading-relaxed text-ink-muted">{b.blurb}</p>
               <div className="mt-3 flex flex-wrap gap-1.5">{b.tags.map((t) => <span key={t} className="chip">{t}</span>)}</div>
               <Link href={`/products?brand=${b.handle}`} className="btn-ghost mt-5 w-full">등록 상품 {n}개 보기</Link>
             </div>
@@ -45,7 +45,7 @@ export default function BrandsPage() {
             </ul>
           </div>
           <div className="flex items-center md:col-span-5 md:justify-end">
-            <a href="mailto:partner@jungsonara.kr?subject=입점 신청" className="btn-accent">입점 신청 메일 보내기</a>
+            <a href="mailto:partner@jungsonara.kr?subject=입점 신청" className="btn-orange">입점 신청 메일 보내기</a>
           </div>
         </div>
       </section>

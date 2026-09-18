@@ -5,6 +5,7 @@
 ![메인](docs/img/home-fold.png)
 
 로컬 디자인/웹뷰 단계. 데이터는 `lib/data.ts` 목업, 장바구니/견적은 localStorage.
+인트로 = [shadcn/ui](https://github.com/shadcn-ui/ui)(114k★) + [Magic UI](https://github.com/magicuidesign/magicui)(21k★). 로고 = `public/img/logo-icon.svg` → 파비콘/OG 자동.
 
 ## 문서
 | 문서 | 설명 |
@@ -21,7 +22,7 @@ npm install
 npm run dev   # http://localhost:3000
 ```
 
-## Higgsfield 이미지 생성 (로고 3D 아이콘·워드마크, 히어로, 상품 20종)
+## Higgsfield 이미지 생성 (히어로, 상품 20종)
 1. https://console.higgsfield.ai 에서 API 키 발급
 2. `.env.local` 에 `HF_CREDENTIALS=KEY_ID:KEY_SECRET`
 3. `npm run gen:images` → `public/img/*.jpg|png` (있는 파일은 건너뜀, 다시 만들려면 파일 삭제)
